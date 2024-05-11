@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -11,121 +10,186 @@
     <meta name="description" content="Serverless web application example">
     <meta name="author" content="">
 
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://js.arcgis.com/4.6/esri/css/main.css">
     <link rel="stylesheet" href="css/ride.css">
     <link rel="stylesheet" href="css/message.css">
 </head>
-
 <body>
 
-    <div class="info panel panel-default">
-        <div class="panel-heading" style="height: 5rem;">
-            <!-- <button id="request" class="btn btn-primary" disabled="disabled">Set pickup</button> -->
-            <div class="dropdown pull-right">
-                <button id="accountLink" class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Account <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="accountLink">
-                    <li><a id="signOut" href="/signin.html">Sign out</a></li>
-                </ul>
-            </div>
+<div class="info panel panel-default">
+    <div class="panel-heading" style="height: 5rem;">
+        <div class="dropdown pull-right">
+            <button id="accountLink" class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Account <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="accountLink">
+                <li><a id="signOut" href="/signin.html">Sign out</a></li>
+            </ul>
         </div>
+    </div>
+</div>
 
+<div  style="display: flex; align-items: center; justify-content: space-around;flex-wrap: wrap; padding-top:8rem; padding-left: 10rem;">
+
+    <div class="add-task-form" style="width: 50rem; background-color: rgb(255, 255, 255);">
+        <h2>Add Task</h2>
+        <form id="addTaskForm">
+            <div class="form-group">
+                <label for="taskId">Task ID:</label>
+                <input type="text" class="form-control" id="taskId" name="taskId">
+            </div>
+            <div class="form-group">
+                <label for="taskTitle">Task Title:</label>
+                <input type="text" class="form-control" id="taskTitle" name="taskTitle">
+            </div>
+            <div class="form-group">
+                <label for="taskContent">Task Content:</label>
+                <input type="text" class="form-control" id="taskContent" name="taskContent">
+            </div>
+            <button style="margin-left: 20rem;" type="submit" class="btn btn-primary">Add Task</button>
+        </form>
     </div>
 
-   
-
-
-
-  
-
-
-
-
-    <!-- Your existing HTML content -->
-
-    <div class="newDiv">
+    <div class="newDiv" >
         <li class="list-group-item active" style="padding: 0; padding-left: 2rem;"><h2>Tasks</h2></li>
         <ul class="list-group" id="taskList" style="overflow: auto; height: 30rem;">
             <!-- Tasks will be dynamically added here -->
         </ul>
     </div>
+    
+</div>
 
-    <!-- Include your scripts here -->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Include other JS files here -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <script>
-        // Fetch data from the API
+<script>
+$(document).ready(function() {
+    // Fetch data from the API and populate the task list
+    $.ajax({
+        url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/tasks',
+        method: 'GET',
+        success: function(response) {
+            console.log("this is response using ajax : ", response);
+            var tasks = response.tasks; // Access the tasks array directly
+
+            // Iterate through the tasks and populate the list
+            tasks.forEach(function(task) {
+                $('#taskList').append(`
+                    <li class="list-group-item" data-task-id="${task.taskId}" >
+                        <h4>${task.taskTitle}</h4>
+                        <p>${task.taskContent}</p>
+                        <button style="margin-left: 28rem;" type="button" class="btn btn-primary update-btn">Update</button>
+                        <button type="button" class="btn btn-danger delete-btn">Delete</button>
+                    </li>
+                `);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.log("this is error using ajax : ", error)
+            console.error(error);
+        }
+    });
+
+    // Function to handle task deletion
+    function deleteTask(taskId) {
+        console.log("delete function is clicked");
+        axios.delete('https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/task', {
+            data: {
+                taskId: taskId
+            }
+        })
+        .then(response => {
+            console.log('Task deleted successfully:', JSON.stringify(response.data));
+            console.log('Task id:', taskId);
+            // Optionally, you can update the UI to reflect the deletion
+        })
+        .catch(error => {
+            console.error('Error deleting task:', error.message);
+        });
+    }
+
+    // Attach event listeners to delete buttons
+    $(document).on('click', '.delete-btn', function() {
+        var taskId = $(this).closest('li').data('task-id');
+        deleteTask(taskId);
+    });
+
+    // Function to handle form submission for adding a task
+    $('#addTaskForm').submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Retrieve values from the form
+        var taskId = $('#taskId').val();
+        var taskTitle = $('#taskTitle').val();
+        var taskContent = $('#taskContent').val();
+
+        // Call the addTask function with the retrieved values
+        addTask(taskId, taskTitle, taskContent);
+
+        // Clear the form fields after submission
+        $('#taskId').val('');
+        $('#taskTitle').val('');
+        $('#taskContent').val('');
+    });
+
+    // Function to add a task
+    function addTask(taskId, taskTitle, taskContent) {
+        console.log("addTask function is clicked");
         $.ajax({
-            url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/tasks',
-            method: 'GET',
+            url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/task',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                taskId: taskId,
+                taskTitle: taskTitle,
+                taskContent: taskContent
+            }),
             success: function(response) {
-                console.log("this is response using ajax : ", response);
-                var tasks = response.tasks; // Access the tasks array directly
+                console.log('Task added successfully:', JSON.stringify(response));
+                // Optionally, you can update the UI to reflect the addition
+                // For example, you can append the new task to the task list
+                $('#taskList').append(`
+                    <li class="list-group-item" data-task-id="${taskId}">
+                        <h4>${taskTitle}</h4>
+                        <p>${taskContent}</p>
+                        <button style="margin-left: 28rem;" type="button" class="btn btn-primary update-btn">Update</button>
+                        <button type="button" class="btn btn-danger delete-btn">Delete</button>
+                    </li>
+                `);
 
-                // Iterate through the tasks and populate the list
-                tasks.forEach(function(task) {
-                    $('#taskList').append(`
-                    <li class="list-group-item" data-task-id=" ${task.taskId} "> <!-- Example of data-task-id -->
-                            <h4>${task.taskTitle}</h4>
-                            <p>${task.taskContent}</p>
-                            <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
-                            <button type="button" class="btn btn-danger">Delete</button>
-                        </li>
-                    `);
-                });
+                window.location.reload()
             },
             error: function(xhr, status, error) {
-                console.log("this is error using ajax : " , error )
-
-                console.error(error);
+                console.error('Error adding task:', error);
             }
         });
+    }
 
+    // Attach event listener to update buttons
+    $(document).on('click', '.update-btn', function() {
+        var taskItem = $(this).closest('li');
+        var taskId = taskItem.data('task-id');
+        var taskTitle = taskItem.find('h4').text();
+        var taskContent = taskItem.find('p').text();
 
-      // Function to handle task deletion
-        function deleteTask(taskId) {
-            console.log("delete function is clicked");
-            $.ajax({
-                url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/task',
-                method: 'DELETE',
-                contentType: 'application/json', // Specify the content type as JSON
-                data: JSON.stringify({ taskId: taskId }), // Pass taskId in the request body as JSON
-                success: function(response) {
-                    // Optionally, you can update the UI to reflect the deletion
-                    console.log('Task deleted successfully:', response);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error deleting task:', error);
-                }
-            });
-        }
+        // Populate the form fields with task data
+        $('#taskId').val(taskId);
+        $('#taskTitle').val(taskTitle);
+        $('#taskContent').val(taskContent);
+    });
+});
+</script>
 
-        // Attach event listeners to edit and delete buttons
-        $(document).on('click', '.btn-danger', function() {
-            // Extract the taskId from the data-task-id attribute of the closest list item
-            var taskId = $(this).closest('li').data('task-id');
-            // You can now call the deleteTask function with taskId
-            deleteTask(taskId);
-        });
-
-
-
-    </script>
-
-    <script src="js/vendor/jquery-3.1.0.js"></script>
-    <script src="js/vendor/bootstrap.min.js"></script>
-    <script src="js/vendor/aws-cognito-sdk.min.js"></script>
-    <script src="js/vendor/amazon-cognito-identity.min.js"></script>
-    <script src="https://js.arcgis.com/4.6/"></script>
-    <script src="js/config.js"></script>
-    <script src="js/cognito-auth.js"></script>
-    <script src="js/esri-map.js"></script>
-    <script src="js/ride.js"></script>
+<script src="js/vendor/jquery-3.1.0.js"></script>
+<script src="js/vendor/bootstrap.min.js"></script>
+<script src="js/vendor/aws-cognito-sdk.min.js"></script>
+<script src="js/vendor/amazon-cognito-identity.min.js"></script>
+<script src="https://js.arcgis.com/4.6/"></script>
+<script src="js/config.js"></script>
+<script src="js/cognito-auth.js"></script>
+<script src="js/esri-map.js"></script>
+<script src="js/ride.js"></script>
 </body>
-
 </html>
