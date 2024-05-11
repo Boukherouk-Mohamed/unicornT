@@ -21,25 +21,25 @@
 <body>
 
     <div class="info panel panel-default">
-        <div class="panel-heading">
-            <button id="request" class="btn btn-primary" disabled="disabled">Set pickup</button>
+        <div class="panel-heading" style="height: 5rem;">
+            <!-- <button id="request" class="btn btn-primary" disabled="disabled">Set pickup</button> -->
             <div class="dropdown pull-right">
                 <button id="accountLink" class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Account <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="accountLink">
-                    <li><a id="signOut" href="#">Sign out</a></li>
+                    <li><a id="signOut" href="/signin.html">Sign out</a></li>
                 </ul>
             </div>
         </div>
-        <div class="panel-body">
+        <!-- <div class="panel-body">
             <ol id="updates">
                 <li>Welcome! Click the map to set your pickup location.</li>
             </ol>
-        </div>
+        </div> -->
     </div>
 
-    <div id="noApiMessage" class="configMessage" style="display: none;">
+    <!-- <div id="noApiMessage" class="configMessage" style="display: none;">
         <div class="backdrop"></div>
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -51,9 +51,9 @@
                 <textarea class="authToken"></textarea>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <div id="noCognitoMessage" class="configMessage" style="display: none;">
+    <!-- <div id="noCognitoMessage" class="configMessage" style="display: none;">
         <div class="backdrop"></div>
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -63,30 +63,75 @@
                 <p>There is no user pool configured in <a href="/js/config.js">/js/config.js</a>. You'll configure this in Module 2 of the workshop.</p>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <div id="main">
+    <!-- <div id="main">
         <div id="map">
         </div>
+    </div> -->
+
+    <!-- <div class="newDiv">
+        <li class="list-group-item active" style="padding: 0; padding-left: 2rem; " ><h2>Tasks </h2></li>
+        <ul class="list-group" style="overflow: auto; height: 30rem;">
+            <li class="list-group-item">Dapibus ac facilisis in   
+                <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-danger">Delete</button>
+            </li>
+            <li class="list-group-item">Dapibus ac facilisis in   
+                <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-danger">Delete</button>
+            </li>
+            
+           </ul>
+
+
+
+    </div> -->
+
+
+    <!-- Your existing HTML content -->
+
+    <div class="newDiv">
+        <li class="list-group-item active" style="padding: 0; padding-left: 2rem;"><h2>Tasks</h2></li>
+        <ul class="list-group" id="taskList" style="overflow: auto; height: 30rem;">
+            <!-- Tasks will be dynamically added here -->
+        </ul>
     </div>
 
-    <div id="authTokenModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="authToken">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Your Auth Token</h4>
-                </div>
-                <div class="modal-body">
-                    <textarea class="authToken"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Include your scripts here -->
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include other JS files here -->
+
+    <script>
+        // Fetch data from the API
+        $.ajax({
+            url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/tasks',
+            method: 'GET',
+            success: function(response) {
+                console.log("this is response using ajax : " , response )
+                // Parse the JSON response
+                var tasks = JSON.parse(response);
+                
+                // Iterate through the tasks and populate the list
+                tasks.forEach(function(task) {
+                    $('#taskList').append(`
+                        <li class="list-group-item">
+                            <h3>${task.taskTitle}</h3>
+                            <p>${task.taskContent}</p>
+                            <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
+                            <button type="button" class="btn btn-danger">Delete</button>
+                        </li>
+                    `);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log("this is error using ajax : " , error )
+
+                console.error(error);
+            }
+        });
+    </script>
 
     <script src="js/vendor/jquery-3.1.0.js"></script>
     <script src="js/vendor/bootstrap.min.js"></script>

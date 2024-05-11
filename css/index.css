@@ -104,11 +104,11 @@ textarea {
 body{
   width: 100vw;
   height: 100vh;
-
-  background-image: url(../images/background.png);
-  background-size: cover;
+  background-color: #1c1a1a;
+  /* background-image: url(../images/background.png); */
+  /* background-size: cover;
   background-repeat: no-repeat;
-  background-position: center bottom;
+  background-position: center bottom; */
 
   font-family: "fairplex-wide";
   -webkit-font-smoothing: antialiased;
@@ -189,7 +189,7 @@ header img{
 
 
 input[type=text], input[type=password], input[type=email] {
-    width: 100%;
+    width: 80%;
     padding: 12px 0;
     margin: 10px 0 30px;
     display: inline-block;
@@ -221,7 +221,7 @@ input[type=text]:valid, input[type=password]:valid {
 input[type=submit] {
     width: 200px;
     background-color: white;
-    color: #f50856;
+    color: #4e15df;
     padding: 14px 20px;
     margin: 8px auto 30px;
     border: none;
@@ -241,7 +241,7 @@ input[type=submit] {
 
 input[type=submit]:hover {
     background-color: #dddddd;
-    color: #bb0642;
+    color: #3df809;
 }
 
 

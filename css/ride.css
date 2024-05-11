@@ -55,3 +55,34 @@ html, body, #main, #map {
     word-wrap: break-word;
     width: 100%;
 }
+
+
+
+.newDiv{
+    padding-top: 10rem;
+    margin: auto;
+    width: 60rem;
+    height: 45rem;
+   
+}
+
+li:hover{
+    background-color: #d7d6d6;
+    cursor: pointer;
+}
+
+.editBtn{
+    background-color: rgb(53, 169, 236);
+    margin-left: 26rem;
+    border: 1px solid rgb(18, 115, 194);
+    border-radius: 15px;
+    width: 8rem;
+    color: white;
+}
+.deleteBtn{
+    background-color: rgb(234, 49, 49);
+    border: 1px solid rgb(171, 49, 49);
+    border-radius: 15px;
+    width: 8rem;
+    color: white;
+}

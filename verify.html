@@ -35,18 +35,19 @@
         </div>
 
         <header>
-          <img src="images/logo.png">
+          <!-- <img src="images/logo.png"> -->
         </header>
 
 
-        <section class="form-wrap">
-            <h1>Verify Email</h1>
+        <section class="form-wrap" style="text-align: center;">
+            <h1>Verify your Email</h1>
             <form id="verifyForm">
               <input type="email" id="emailInputVerify" placeholder="Email" required>
               <input type="text" id="codeInputVerify" placeholder="Verification Code" pattern=".*" required>
 
               <input type="submit" value="Verify">
             </form>
+            <a href="/signin.html" style="color: red;"> Sign in</a>
         </section>
 
         <script src="js/vendor/jquery-3.1.0.js"></script>
