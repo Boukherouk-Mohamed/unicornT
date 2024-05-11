@@ -32,61 +32,16 @@
                 </ul>
             </div>
         </div>
-        <!-- <div class="panel-body">
-            <ol id="updates">
-                <li>Welcome! Click the map to set your pickup location.</li>
-            </ol>
-        </div> -->
+
     </div>
 
-    <!-- <div id="noApiMessage" class="configMessage" style="display: none;">
-        <div class="backdrop"></div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Successfully Authenticated!</h3>
-            </div>
-            <div class="panel-body">
-                <p>This page is not functional yet because there is no API invoke URL configured in <a href="/js/config.js">/js/config.js</a>. You'll configure this in Module 3.</p>
-                <p>In the meantime, if you'd like to test the Amazon Cognito user pool authorizer for your API, use the auth token below:</p>
-                <textarea class="authToken"></textarea>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- <div id="noCognitoMessage" class="configMessage" style="display: none;">
-        <div class="backdrop"></div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">No Cognito User Pool Configured</h3>
-            </div>
-            <div class="panel-body">
-                <p>There is no user pool configured in <a href="/js/config.js">/js/config.js</a>. You'll configure this in Module 2 of the workshop.</p>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- <div id="main">
-        <div id="map">
-        </div>
-    </div> -->
-
-    <!-- <div class="newDiv">
-        <li class="list-group-item active" style="padding: 0; padding-left: 2rem; " ><h2>Tasks </h2></li>
-        <ul class="list-group" style="overflow: auto; height: 30rem;">
-            <li class="list-group-item">Dapibus ac facilisis in   
-                <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
-                <button type="button" class="btn btn-danger">Delete</button>
-            </li>
-            <li class="list-group-item">Dapibus ac facilisis in   
-                <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
-                <button type="button" class="btn btn-danger">Delete</button>
-            </li>
-            
-           </ul>
+   
 
 
 
-    </div> -->
+  
+
+
 
 
     <!-- Your existing HTML content -->
@@ -109,15 +64,14 @@
             url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/tasks',
             method: 'GET',
             success: function(response) {
-                console.log("this is response using ajax : " , response )
-                // Parse the JSON response
-                var tasks = JSON.parse(response);
-                
+                console.log("this is response using ajax : ", response);
+                var tasks = response.tasks; // Access the tasks array directly
+
                 // Iterate through the tasks and populate the list
                 tasks.forEach(function(task) {
                     $('#taskList').append(`
-                        <li class="list-group-item">
-                            <h3>${task.taskTitle}</h3>
+                    <li class="list-group-item" data-task-id=" ${task.taskId} "> <!-- Example of data-task-id -->
+                            <h4>${task.taskTitle}</h4>
                             <p>${task.taskContent}</p>
                             <button style="margin-left: 28rem;" type="button" class="btn btn-primary">Update</button>
                             <button type="button" class="btn btn-danger">Delete</button>
@@ -131,6 +85,36 @@
                 console.error(error);
             }
         });
+
+
+      // Function to handle task deletion
+        function deleteTask(taskId) {
+            console.log("delete function is clicked");
+            $.ajax({
+                url: 'https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/task',
+                method: 'DELETE',
+                contentType: 'application/json', // Specify the content type as JSON
+                data: JSON.stringify({ taskId: taskId }), // Pass taskId in the request body as JSON
+                success: function(response) {
+                    // Optionally, you can update the UI to reflect the deletion
+                    console.log('Task deleted successfully:', response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting task:', error);
+                }
+            });
+        }
+
+        // Attach event listeners to edit and delete buttons
+        $(document).on('click', '.btn-danger', function() {
+            // Extract the taskId from the data-task-id attribute of the closest list item
+            var taskId = $(this).closest('li').data('task-id');
+            // You can now call the deleteTask function with taskId
+            deleteTask(taskId);
+        });
+
+
+
     </script>
 
     <script src="js/vendor/jquery-3.1.0.js"></script>
