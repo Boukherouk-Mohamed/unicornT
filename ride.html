@@ -92,23 +92,28 @@ $(document).ready(function() {
         }
     });
 
-    // Function to handle task deletion
-    function deleteTask(taskId) {
-        console.log("delete function is clicked");
-        axios.delete('https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/task', {
-            data: {
-                taskId: taskId
-            }
-        })
-        .then(response => {
-            console.log('Task deleted successfully:', JSON.stringify(response.data));
-            console.log('Task id:', taskId);
-            // Optionally, you can update the UI to reflect the deletion
-        })
-        .catch(error => {
-            console.error('Error deleting task:', error.message);
-        });
-    }
+        // Function to handle task deletion
+        function deleteTask(taskId) {
+            console.log("delete function is clicked");
+            // Convert taskId to string
+            taskId = taskId.toString();
+            console.log(taskId)
+            axios.delete(`https://5wag0qdts4.execute-api.us-east-1.amazonaws.com/prod/task?taskId=${taskId}`, {
+                data: {
+                    taskId: 1
+                }
+            })
+            .then(response => {
+                console.log('Task deleted successfully:', JSON.stringify(response.data));
+                console.log('Task id:', taskId);
+                // Optionally, you can update the UI to reflect the deletion
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error deleting task:', error.message);
+            });
+        }
+
 
     // Attach event listeners to delete buttons
     $(document).on('click', '.delete-btn', function() {
@@ -159,7 +164,7 @@ $(document).ready(function() {
                     </li>
                 `);
 
-                window.location.reload()
+                // window.location.reload()
             },
             error: function(xhr, status, error) {
                 console.error('Error adding task:', error);
